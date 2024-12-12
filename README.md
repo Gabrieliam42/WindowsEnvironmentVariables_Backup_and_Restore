@@ -6,10 +6,13 @@ Windows Environment Variables Backup and Restore
 
 
 
+<br><br>
 
-##### AI Involvement
 
-The script's development did not depend on AI tools like ChatGPT, their main use was for creating code comments and descriptions.
+
+
+
+<br><br>
 
 
 
