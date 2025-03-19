@@ -10,7 +10,7 @@ Windows Environment Variables Backup and Restore
 - `WindowsEnvironmentVariables_Restore` restores all of the Environment Variables from the `env_vars_backup.json` which should be in the current working directory.
 
 Note: This project saves and restores all of the complete Environment Variables meaning everything from the User Variables and also everything from the System Variables.
-Another advantage is that the json file can be edited afterwards if there is such a need.
+Another advantage is that the generated json file can be edited afterwards if there is such a need.
 
 
 
