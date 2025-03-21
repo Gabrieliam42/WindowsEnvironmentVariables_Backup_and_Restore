@@ -2,77 +2,35 @@
 # GitHub Profile: https://github.com/Gabrieliam42
 
 import os
-import winreg
-import ctypes
 import sys
-import time
-import json
+import ctypes
+import subprocess
 
-def is_admin():
+def check_admin_privileges():
     try:
-        return ctypes.windll.shell32.IsUserAnAdmin()
+        return ctypes.windll.shell32.IsUserAnAdmin() != 0
     except:
         return False
 
-def run_as_admin():
-    params = " ".join([f'"{arg}"' for arg in sys.argv])
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, params, None, 1)
+def run_as_admin(script, params):
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, f'"{script}" {params}', None, 1)
 
-def save_environment_variables(file_path):
-    env_vars = {"system": {}, "user": {}}
+def export_env_registry():
+    cwd = os.getcwd()
+    system_backup_path = os.path.join(cwd, 'env_system_backup.reg')
+    user_backup_path = os.path.join(cwd, 'env_user_backup.reg')
 
-    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment') as key:
-        i = 0
-        while True:
-            try:
-                name, value, _ = winreg.EnumValue(key, i)
-                env_vars["system"][name] = value
-                i += 1
-            except OSError:
-                break
+    commands = [
+        f'reg export "HKLM\\SYSTEM\\CurrentControlSet\\Control\\Session Manager\\Environment" "{system_backup_path}" /y',
+        f'reg export "HKCU\\Environment" "{user_backup_path}" /y'
+    ]
 
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Environment') as key:
-        i = 0
-        while True:
-            try:
-                name, value, _ = winreg.EnumValue(key, i)
-                env_vars["user"][name] = value
-                i += 1
-            except OSError:
-                break
-
-    with open(file_path, 'w') as file:
-        json.dump(env_vars, file, indent=4)
-        file.write('\n')
-
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
-
-    with open(file_path, 'w') as file:
-        for line in lines:
-            file.write(line)
-            if line.strip().endswith(','):
-                file.write('\n')
-
-def restore_environment_variables(file_path):
-    with open(file_path, 'r') as file:
-        env_vars = json.load(file)
-
-    with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r'SYSTEM\CurrentControlSet\Control\Session Manager\Environment', 0, winreg.KEY_ALL_ACCESS) as key:
-        for name, value in env_vars["system"].items():
-            winreg.SetValueEx(key, name, 0, winreg.REG_SZ, value)
-
-    with winreg.OpenKey(winreg.HKEY_CURRENT_USER, r'Environment', 0, winreg.KEY_ALL_ACCESS) as key:
-        for name, value in env_vars["user"].items():
-            winreg.SetValueEx(key, name, 0, winreg.REG_SZ, value)
+    for cmd in commands:
+        subprocess.run(cmd, shell=True)
 
 if __name__ == "__main__":
-    if not is_admin():
-        print("Requesting administrative privileges...")
-        run_as_admin()
-        sys.exit()
-
-    file_path = "env_vars_backup.json"
-
-    save_environment_variables(file_path)
-    print(f"Environment variables saved to {file_path}")
+    if check_admin_privileges():
+        export_env_registry()
+    else:
+        print("Script is not running with admin privileges. Restarting with admin privileges...")
+        run_as_admin(os.path.abspath(__file__), "")
