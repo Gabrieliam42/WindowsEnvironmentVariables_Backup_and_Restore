@@ -25,6 +25,7 @@ Note: This project helps you save all of the Environment Variables, and safely r
 
 
 
+
 [Download Latest Release (v1.0.0)](https://github.com/Gabrieliam42/WindowsEnvironmentVariables_Backup_and_Restore/releases/tag/v1.0.0)
 
 **Script Developer:** Gabriel Mihai Sandu  
