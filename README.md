@@ -5,6 +5,7 @@ Windows Environment Variables Backup and Restore
 * These scripts have self-explanatory names `WindowsEnvironmentVariables_Backup.py` and `WindowsEnvironmentVariables_Restore.py` have also been compiled as `WindowsEnvironmentVariables_Backup.exe` and `WindowsEnvironmentVariables_Restore.exe`
 
 
+
 - `WindowsEnvironmentVariables_Backup.exe` saves the Environment Variables in the current working directory as the files `env_user_backup.reg` and `env_system_backup.reg`.
 
 - `WindowsEnvironmentVariables_Restore.exe` restores the Environment Variables from both those `env_user_backup.reg` and `env_system_backup.reg` files which should be in the current working directory.
